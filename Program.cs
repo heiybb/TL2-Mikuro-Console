@@ -16,15 +16,19 @@ namespace TL2_Mikuro_Console
 
             string modsPath = AppDomain.CurrentDomain.BaseDirectory + "mods";
             string userInput = string.Empty;
+            Stopwatch sw = new Stopwatch();
+
             while (userInput != ":q")
             {
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 List<string> modList = GetImmediateSubfolderNames(modsPath);
                 for (int i = 0; i < modList.Count; i++)
                 {
                     Console.WriteLine(i + ": " + modList[i]);
                 }
-                Console.Write("##### Type ':q' to quit or select MOD number you would like to build:");
-                Stopwatch sw = new Stopwatch();
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write("📝Type ':q' to quit or select MOD number you would like to build->");
+                Console.ResetColor();
 
                 userInput = Console.ReadLine();
                 if (userInput != ":q")
@@ -40,7 +44,7 @@ namespace TL2_Mikuro_Console
                             bool buildResult = EditorDLL.CreateMod(modPath, true);
                             sw.Stop();
                             Console.ForegroundColor = ConsoleColor.Yellow;
-                            Console.WriteLine($"Build: {modPath}");
+                            Console.WriteLine($"🚀Build: {modPath}");
                             Console.ResetColor();
                             if (buildResult)
                             {
@@ -55,13 +59,13 @@ namespace TL2_Mikuro_Console
                             Console.ResetColor();
 
                             Console.ForegroundColor = ConsoleColor.Green;
-                            Console.WriteLine("🚑️Validating MPP files...");
+                            Console.WriteLine("🚨Validating MPP files...");
                             List<string> invalidMppFileList = FindAllInvalidMPP(modsPath + @"\" + modList[inputNum]);
                             if (invalidMppFileList.Count > 0)
                             {
                                 Console.ForegroundColor = ConsoleColor.DarkRed;
                                 invalidMppFileList.ForEach(invalidMPP => Console.WriteLine($"📌Found invalid MPP file: {invalidMPP.Replace(modsPath, "")}"));
-                                Console.WriteLine("🚨You may need to re-build again to generate appropriate MPP files");
+                                Console.WriteLine("🔖You may need to re-build again to generate appropriate MPP files");
                             }
                             else
                             {
@@ -112,7 +116,7 @@ namespace TL2_Mikuro_Console
                 }
                 else
                 {
-                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("GUTS Editor's DLL init finished.");
                     Console.ResetColor();
                     break;
