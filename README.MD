@@ -2,7 +2,13 @@
 
 Since I am not familiar with WPF, so I decide to create a `Console` version of `TL2-Mikuro` only works for MOD packing.
 
+## Installitaion
+Just drop the `TL2-Mikuro-Console.exe` into the same folder of `Editor.exe/Torchlight2.exe`.  
+
 ## Known Issue
+### Internal
+Limited by the logic inside `EditorGuts.dll`, MOD build only accept the projects in `mods` folder
+
 ### D3D9RenderSystem
 Sometimes the `D3D9RenderSystem::_createRenderWindow` fail to initialize, and not be able to correctly handled.  
 Wait for 500ms then try again should be fine, might be related to some memory R/W permission problem.  
