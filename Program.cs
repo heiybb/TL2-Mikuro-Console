@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 
@@ -10,7 +11,6 @@ namespace TL2_Mikuro_Console
 {
     internal class Program
     {
-
         static HashSet<string> layoutInvalidMppTrigger = new HashSet<string>
         {
             "PROPERTY NODE",
@@ -64,12 +64,8 @@ namespace TL2_Mikuro_Console
             "RANDOM INPUT CHOICE",
             "STATS EVALUATOR"
         };
-
-        //static string workingDirectory = @"E:\Program Files (x86)\Steam\steamapps\common\Torchlight II";
-
         static void Main(string[] args)
         {
-            //Directory.SetCurrentDirectory(workingDirectory);
             Console.OutputEncoding = Encoding.UTF8;
             InitDLL();
 
@@ -144,43 +140,37 @@ namespace TL2_Mikuro_Console
             Console.WriteLine("💡Goodbye!");
         }
 
+        //https://stackoverflow.com/questions/1277563/how-do-i-get-the-handle-of-a-console-applications-window
+        [DllImport("kernel32.dll")]
+        static extern IntPtr GetConsoleWindow();
+
         static void InitDLL()
         {
-            int initFlag = 0;
-            int maxTry = 3;
-            for (int i = 0; i < maxTry; i++)
+            try
             {
-                if (initFlag == 0)
+                int hlnst = Marshal.GetHINSTANCE(typeof(Program).Module).ToInt32();
+                //int hlnst = -1;
+                IntPtr hWnd = GetConsoleWindow();
+                Console.WriteLine($"💡Instance Handle: {hlnst}");
+                Console.WriteLine($"💡Process Handle: {hWnd}");
+                string t1 = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+                int initFlag = EditorDLL.InitEditor(hlnst, hWnd.ToInt32());
+                if (initFlag == 1)
                 {
-                    try
-                    {
-                        //int hlnst = Marshal.GetHINSTANCE(typeof(Program).Module).ToInt32();
-                        int hlnst = -1;
-                        var hWnd = Process.GetCurrentProcess().Handle;
-
-                        Console.WriteLine($"💡Instance Handle: {hlnst}");
-                        Console.WriteLine($"💡Process Handle: {hWnd}");
-
-                        initFlag = EditorDLL.InitEditor(hlnst, hWnd.ToInt32());
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.ForegroundColor = ConsoleColor.DarkRed;
-                        Console.WriteLine("GUTS Editor's DLL init failed.");
-                        Console.WriteLine("Try again 300ms ater");
-                        Console.ResetColor();
-                        EditorDLL.ShutdownEditor();
-                        Console.Error.WriteLine(ex.Message);
-                        Thread.Sleep(300);
-                    }
-                }
-                else
-                {
+                    string t2 = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
                     Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine($"✅Init S: {t1}");
+                    Console.WriteLine($"✅Init E: {t2}");
                     Console.WriteLine("✅GUTS Editor's DLL init finished.");
                     Console.ResetColor();
-                    break;
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.WriteLine("🚨GUTS Editor's DLL init failed.");
+                Console.ResetColor();
+                Console.Error.WriteLine(ex.Message);
             }
         }
 
@@ -197,8 +187,6 @@ namespace TL2_Mikuro_Console
 
             return folderNames;
         }
-
-
 
         static string ReadAndConvertBytes(string filePath, int numBytes)
         {
