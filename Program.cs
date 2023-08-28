@@ -65,16 +65,16 @@ namespace TL2_Mikuro_Console
             "STATS EVALUATOR"
         };
 
-
+        //static string workingDirectory = @"E:\Program Files (x86)\Steam\steamapps\common\Torchlight II";
 
         static void Main(string[] args)
         {
+            //Directory.SetCurrentDirectory(workingDirectory);
             Console.OutputEncoding = Encoding.UTF8;
             InitDLL();
 
             string modsPath = AppDomain.CurrentDomain.BaseDirectory + "mods";
             string userInput = string.Empty;
-            Stopwatch sw = new Stopwatch();
 
             while (userInput != ":q")
             {
@@ -99,16 +99,18 @@ namespace TL2_Mikuro_Console
                         {
                             string modPath = modsPath + @"\" + modList[inputNum] + @"\MOD.DAT";
                             EditorDLL.EditorSetWorkingMod(modsPath + @"\" + modList[inputNum]);
-                            sw.Start();
+                            string buildStartTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
                             bool buildResult = EditorDLL.CreateMod(modPath, true);
-                            sw.Stop();
+                            string buildEndTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
                             Console.ForegroundColor = ConsoleColor.Yellow;
                             Console.WriteLine($"🚀Build: {modPath}");
                             Console.ResetColor();
                             if (buildResult)
                             {
                                 Console.ForegroundColor = ConsoleColor.Green;
-                                Console.WriteLine($"🎉Sucess, time cost(ms): {sw.ElapsedMilliseconds}");
+                                Console.WriteLine($"🎉Sucess");
+                                Console.WriteLine($"💡Start: {buildStartTime}");
+                                Console.WriteLine($"💡End:   {buildEndTime}");
                             }
                             else
                             {
@@ -156,8 +158,8 @@ namespace TL2_Mikuro_Console
                         int hlnst = -1;
                         var hWnd = Process.GetCurrentProcess().Handle;
 
-                        Console.WriteLine($"Instance Handle: {hlnst}");
-                        Console.WriteLine($"Process Handle: {hWnd}");
+                        Console.WriteLine($"💡Instance Handle: {hlnst}");
+                        Console.WriteLine($"💡Process Handle: {hWnd}");
 
                         initFlag = EditorDLL.InitEditor(hlnst, hWnd.ToInt32());
                     }
@@ -175,7 +177,7 @@ namespace TL2_Mikuro_Console
                 else
                 {
                     Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("GUTS Editor's DLL init finished.");
+                    Console.WriteLine("✅GUTS Editor's DLL init finished.");
                     Console.ResetColor();
                     break;
                 }
